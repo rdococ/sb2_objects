@@ -217,10 +217,10 @@ sb2.registerScriptblock("sb2_objects:define_response", {
 		meta:set_string("infotext", "Message: \"\"\nParameter: \"\"")
 		meta:set_string("formspec", [[
 			formspec_version[4]
-			size[10,7.5]
+			size[10,5.5]
 			field[2.5,1;5,1;message;Message;${message}]
 			field[2.5,2.5;5,1;parameter;Parameter;${parameter}]
-			button_exit[3.5,6;3,1;proceed;Proceed]
+			button_exit[3.5,4;3,1;proceed;Proceed]
 		]])
 	end,
 	
