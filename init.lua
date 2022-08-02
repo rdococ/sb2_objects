@@ -50,7 +50,7 @@ sb2.registerScriptblock("sb2_objects:create_object", {
 	sb2_label = "Create Object",
 	
 	sb2_explanation = {
-		shortExplanation = "Creates and reports an object, a unit of behaviour that can respond to a fixed set of messages.",
+		shortExplanation = "Creates and reports an object, a unit of behaviour that can respond to a set of messages.",
 		inputSlots = {
 			{"Right", "A set of response definitions."}
 		},
