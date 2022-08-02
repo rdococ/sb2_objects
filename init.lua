@@ -307,11 +307,6 @@ sb2.registerScriptblock("sb2_objects:forward_message", {
 			return forwardee:doReceive(process, context, message.name, message.arg)
 		end
 		
-		local result = frame:getArg("result")
-		if result ~= nil then
-			return process:report(result)
-		end
-		
 		process:pop()
 		return process:push(sb2.Frame:new(vector.add(pos, dirs.front), context))
 	end,
@@ -385,7 +380,7 @@ sb2.registerScriptblock("sb2_objects:tell_object", {
 	},
 	
 	sb2_color = sb2.colors.objects,
-	sb2_icon  = "sb2_icon_send.png",
+	sb2_icon  = "sb2_icon_tell_object.png",
 	sb2_slotted_faces = {"left", "right", "front"},
 	
 	sb2_input_name = "message",
