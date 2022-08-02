@@ -374,14 +374,14 @@ sb2.registerScriptblock("sb2_objects:tell_object", {
 	sb2_label = "Tell Object",
 	
 	sb2_explanation = {
-		shortExplanation = "Sends a message to an object, then continues.",
+		shortExplanation = "Sends a message to an object before continuing.",
 		inputValues = {
 			{"Message", "The name of the message to send."},
 		},
 		inputSlots = {
 			{"Left", "The object to send the message to."},
 			{"Right", "The argument to pass with the message."},
-			{"Front", "What to do afterwards."}
+			{"Front", "What to do next."}
 		}
 	},
 	
