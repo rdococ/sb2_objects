@@ -267,13 +267,14 @@ sb2.registerScriptblock("sb2_objects:forward_message", {
 	sb2_label = "Forward Message",
 	
 	sb2_explanation = {
-		shortExplanation = "Forwards messages to the given object.",
+		shortExplanation = "Forwards received messages to the given object.",
 		inputSlots = {
 			{"Right", "The object to receive the forwarded message."},
 			{"Front", "Other responses if the object does not have a response for this message."}
 		},
 		additionalPoints = {
-			"Use this in the body of a Create Object block!"
+			"Use this in the body of a Create Object block!",
+			"This is not inheritance - the recipient will receive the forwarded message as normal."
 		}
 	},
 	
