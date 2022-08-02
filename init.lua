@@ -308,8 +308,13 @@ sb2.registerScriptblock("sb2_objects:forward_message", {
 			return forwardee:doReceive(process, context, message.name, message.arg)
 		end
 		
-		process:pop()
-		return process:push(sb2.Frame:new(vector.add(pos, dirs.front), context))
+		local result = frame:getArg("result")
+		if type(result) ~= "table" or not result.getResult then
+			process:pop()
+			return process:push(sb2.Frame:new(vector.add(pos, dirs.front), context))
+		end
+		
+		return process:report(result)
 	end,
 })
 
