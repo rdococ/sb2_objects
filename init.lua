@@ -1,10 +1,10 @@
 --[[
 Object interface:
-	doReceive(process, context, message, arg)
+	doSend(process, context, message, arg)
 		Called by the 'Ask/Tell Object' blocks to perform a message send.
 		Expected to report either nil (meaning the object does not understand the message) or a MessageResult.
 
-Any object implementing doReceive automatically becomes an SB2 Object, able to receive messages sent by 'Ask Object', 'Tell Object' and 'Forward Message'.
+Any object implementing doSend automatically becomes an SB2 Object, able to receive messages sent by 'Ask Object', 'Tell Object' and 'Resend Message'.
 ]]
 
 sb2.Object = sb2.registerClass("object")
@@ -18,7 +18,7 @@ function sb2.Object:new(closure)
 	
 	return inst
 end
-function sb2.Object:doReceive(process, context, message, arg)
+function sb2.Object:doSend(process, context, message, arg)
 	return self.closure:doCall(process, context, {name = message, arg = arg})
 end
 function sb2.Object:recordString(record)
@@ -30,7 +30,7 @@ MessageResult interface:
 	getResult()
 		Returns the result.
 
-MessageResult is a wrapper over the result of a message send. MessageResult indicates that the object understood the message and reacted appropriately even if the object reports nil. This allows the implementation of conditional message forwarding akin to multiple embedding in Golang.
+MessageResult is a wrapper over the result of a message send. MessageResult indicates that the object understood the message and reacted appropriately even if the object reports nil. This is done to implement message forwarding.
 ]]
 
 sb2.MessageResult = sb2.registerClass("messageResult")
@@ -55,7 +55,7 @@ sb2.registerScriptblock("sb2_objects:create_object", {
 			{"Right", "A set of response definitions."}
 		},
 		additionalPoints = {
-			"Use 'Define Response' to define how this object responds to specific messages.",
+			"Use 'Respond To Message' to define how this object responds to specific messages.",
 			"Objects can store private data in variables from where they were created.",
 			"To build a class, build a procedure that reports an object!"
 		}
@@ -189,18 +189,19 @@ sb2.registerScriptblock("sb2_objects:get_myself", {
 	}
 })
 
-sb2.registerScriptblock("sb2_objects:define_response", {
-	sb2_label = "Define Response",
+minetest.register_alias("sb2_objects:define_response", "sb2_objects:respond_to_message")
+sb2.registerScriptblock("sb2_objects:respond_to_message", {
+	sb2_label = "Respond To Message",
 	
 	sb2_explanation = {
-		shortExplanation = "Defines an object's response to a specific message.",
+		shortExplanation = "Responds to a specific message sent to the current object.",
 		inputValues = {
-			{"Message", "The name of the message."},
+			{"Message", "The name of the message to respond to."},
 			{"Parameter", "The name of the parameter."}
 		},
 		inputSlots = {
 			{"Right", "What to do when the object receives this message."},
-			{"Front", "Other responses if the object did not receive this message."}
+			{"Front", "What to do if the object did not receive this specific message."}
 		},
 		additionalPoints = {
 			"Use this in the body of a Create Object block!"
@@ -263,18 +264,19 @@ sb2.registerScriptblock("sb2_objects:define_response", {
 	end,
 })
 
-sb2.registerScriptblock("sb2_objects:forward_message", {
-	sb2_label = "Forward Message",
+minetest.register_alias("sb2_objects:forward_message", "sb2_objects:resend_message")
+sb2.registerScriptblock("sb2_objects:resend_message", {
+	sb2_label = "Resend Message",
 	
 	sb2_explanation = {
-		shortExplanation = "Forwards received messages to the given object.",
+		shortExplanation = "Resends the current message to the given object.",
 		inputSlots = {
-			{"Right", "The object to receive the forwarded message."},
-			{"Front", "Other responses if the object does not have a response for this message."}
+			{"Right", "The object to receive the resent message."},
+			{"Front", "What to do if the recipient did not understand the message."}
 		},
 		additionalPoints = {
 			"Use this in the body of a Create Object block!",
-			"This is not inheritance - the recipient will receive the forwarded message as normal."
+			"This is not inheritance, the recipient will receive the message as usual."
 		}
 	},
 	
@@ -298,14 +300,14 @@ sb2.registerScriptblock("sb2_objects:forward_message", {
 		end
 		
 		local forwardee = frame:getArg("forwardee")
-		if type(forwardee) ~= "table" or not forwardee.doReceive then
+		if type(forwardee) ~= "table" or not forwardee.doSend then
 			process:pop()
 			return process:push(sb2.Frame:new(vector.add(pos, dirs.front), context))
 		end
 		
 		if not frame:isArgEvaluated("result") then
 			frame:selectArg("result")
-			return forwardee:doReceive(process, context, message.name, message.arg)
+			return forwardee:doSend(process, context, message.name, message.arg)
 		end
 		
 		local result = frame:getArg("result")
@@ -354,11 +356,11 @@ sb2.registerScriptblock("sb2_objects:ask_object", {
 		end
 		
 		local object = frame:getArg("object")
-		if type(object) ~= "table" or not object.doReceive then return process:report(nil) end
+		if type(object) ~= "table" or not object.doSend then return process:report(nil) end
 		
 		if not frame:isArgEvaluated("result") then
 			frame:selectArg("result")
-			return object:doReceive(process, context, meta:get_string("message"), frame:getArg(1))
+			return object:doSend(process, context, meta:get_string("message"), frame:getArg(1))
 		end
 		
 		local result = frame:getArg("result")
@@ -407,11 +409,11 @@ sb2.registerScriptblock("sb2_objects:tell_object", {
 		end
 		
 		local object = frame:getArg("object")
-		if type(object) ~= "table" or not object.doReceive then return process:report(nil) end
+		if type(object) ~= "table" or not object.doSend then return process:report(nil) end
 		
 		if not frame:isArgEvaluated("result") then
 			frame:selectArg("result")
-			return object:doReceive(process, context, meta:get_string("message"), frame:getArg(1))
+			return object:doSend(process, context, meta:get_string("message"), frame:getArg(1))
 		end
 		
 		process:pop()
