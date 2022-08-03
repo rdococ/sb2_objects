@@ -22,7 +22,7 @@ function sb2.Object:doSend(process, context, message, arg)
 	return self.closure:doCall(process, context, {name = message, arg = arg})
 end
 function sb2.Object:recordString(record)
-	return string.format("<object>")
+	return "<object>"
 end
 
 --[[
@@ -42,6 +42,10 @@ function sb2.MessageResult:new(result)
 end
 function sb2.MessageResult:getResult()
 	return self.result
+end
+function sb2.MessageResult:recordString(record)
+	record[self] = true
+	return ("<message result %s>"):format(sb2.prettyPrint(self.result, record))
 end
 
 sb2.colors.objects = "#666666"
