@@ -259,6 +259,7 @@ sb2.registerScriptblock("sb2_objects:respond_to_message", {
 			frame:selectArg("result")
 			
 			local funcContext = context:copy()
+			funcContext:setAttribute("objects:message", nil)
 			funcContext:declareVar(meta:get_string("parameter"), message.arg)
 			
 			return process:push(sb2.Frame:new(vector.add(pos, dirs.right), funcContext))
