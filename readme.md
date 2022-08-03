@@ -5,6 +5,8 @@ Adds an object model to [Scriptblocks 2](https://github.com/rdococ/scriptblocks2
 
 Objects are also similar to closures, unnamed procedures that can be passed around as values. You can consider a closure to be an object with only one message; alternatively, you can consider an object to be a closure that takes two arguments, the message title and accompanying data. In fact, this extension implements objects using builtin closures.
 
+This mod is still in a developmental stage and updates will most likely break existing programs!
+
 ## Features
 
 * Creating objects with arbitrary responses to a set of messages.
